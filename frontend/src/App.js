@@ -11,7 +11,7 @@ const ReactJSSPApp = () => {
     const [mode, setMode] = useState('dark');
 
     useEffect(() => {
-        tests.current()
+        console.warn('ReactJSSPApp')
     }, []);
 
 
