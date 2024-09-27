@@ -33,8 +33,8 @@ const Root = () => {
         <AppContainer>
             {
                 width > 800
-                    ? getDesktopContent :
-                    getMobileContent
+                    ? getDesktopContent() :
+                    getMobileContent()
             }
         </AppContainer>
     );
