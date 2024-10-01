@@ -4,8 +4,8 @@ import quotesStore from "./quotes";
 
 class WebSocketStore {
     url='ws://localhost:8082'
+    // url='wss://trade.termplat.com:8800/?password=1234'
     socket = null;
-    messages = [];
     isConnected = false;
 
     constructor() {
@@ -16,45 +16,37 @@ class WebSocketStore {
     }
 
     generateClientId() {
-        return `client_${Math.random().toString(36).substr(2, 9)}`;
+        return `client_${Math.floor(Math.random() * 1e9).toString()}`
     }
 
     connect() {
         this.socket = new WebSocket(this.url);
         this.socket.onopen = () => {
             this.isConnected = true;
-            quotesStore.setStatusMessage({text:"Подключение установлено",color:"primary"});
+            quotesStore.setStatusMessage(["Подключение установлено", "primary"]);
             this.sendMessage({type: 'register', clientId: this.clientId});
         };
-
 
         this.socket.onmessage = (event) => {
             try {
                 const quote = JSON.parse(event.data);
+                // console.log("Получена котировка:", quote);
                 quotesStore.addQuote(quote);
-                console.log("Получена котировка:", quote);
             } catch (error) {
-                console.error("Ошибка при получении котировки:", error);
-                quotesStore.setStatusMessage({text:"Ошибка при получении котировки", color:'danger'});
+                quotesStore.setStatusMessage(["Соединение потеряно. Попытка переподключения ...", "warning"]);
+                setTimeout(() => {
+                    this.connect(this.url);
+                }, 5000);
+                console.error("WebSocket error:", error);
             }
         };
 
         this.socket.onclose = () => {
-            quotesStore.setStatusMessage({text:"Готов к работе",color:'white'});
+            quotesStore.setStatusMessage(["Готов к работе", "white"]);
             console.log('WebSocket connection closed');
         };
-
-        this.socket.onerror = (error) => {
-            // Попытка переподключения через 5 секунд
-            quotesStore.setStatusMessage({text:"Соединение потеряно. Попытка переподключения...", color:'warning'});
-            setTimeout(() => {
-                this.connect(this.url);
-            }, 5000);
-            console.error("WebSocket error:", error);
-            this.socket.close()
-        };
-
     }
+
 
 
     sendMessage(message) {

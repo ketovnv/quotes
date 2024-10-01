@@ -3,17 +3,10 @@ import {makeAutoObservable,action} from "mobx";
 
 class AppStore {
 
-    changeColorTheme = null;
-
     constructor() {
-        makeAutoObservable(this, {
-            setToggleModeFunction: action
-        });
+        makeAutoObservable(this);
     }
 
-    setToggleModeFunction(changeTheme){
-        this.changeColorTheme = changeTheme
-    }
 
    useScreenWidth () {
         const [screenWidth, setScreenWidth] = useState(window.innerWidth);

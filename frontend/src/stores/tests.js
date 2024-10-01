@@ -1,5 +1,5 @@
 import {makeAutoObservable, action} from 'mobx';
-import {calculateAverage, calculateMax, calculateMin, calculateStandardDeviation} from "../utils/calculations";
+import {calculateAverage, calculateMax, calculateMin, calculateStandardDeviation} from "../classes/calculations";
 
 class TestsStore {
 

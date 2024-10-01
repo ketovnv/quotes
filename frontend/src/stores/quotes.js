@@ -1,73 +1,174 @@
-import {makeAutoObservable} from "mobx";
+import {makeAutoObservable, action, toJS} from "mobx";
+import {calculateAverage} from "../classes/calculations";
+import {BatchCalculator} from "../classes/BatchCalculator";
 
-class QuotesStore {
-    quotes = []; // Массив для хранения котировок
-    totalQuotes = 0; // Общее количество котировок
-    lostQuotes = 0; // Количество потерянных котировок
-    meanValue = 0; // Среднее арифметическое
+class QuotesStore { //!!!  НЕ Забыть о том что нужно чистить память !!!
+
+
+    partSize = 100  // количество накопившихся котировок,
+                    // при котором производится перерасчёт,
+                    // если пользователь выбрал меньшее количество
+                    // вычисления производятся только при накоплении
+                    // выбранного им количества
+
+    selectedNumber = 1 // выбранное пользователем количество котировок,
+    // при котором производятся вычисления
+
+    quotes = []; // массив для хранения котировок
+    statusMessage = ['', 'success'] // текст и цвет сообщения
+
+
+    //результаты последних вычислений
+    results = {
+        quotesNumber: 0,    // количество котировок,
+                            // при котором производились
+                            // вычисления
+        average: 0, // креднее значение
+        standardDeviation: 0, // стандартное отклонение
+        modeValue: 0, // мода
+        minValue: 0, // минимальное значение
+        maxValue: 0, // максимальное значение
+        lostQuotes: 0, // количество потерянных котировок
+        calculationStartTime: new Date(), // время начала расчёта
+        calculationTime: 0, // время расчёта в миллисекундах
+    };
+
+    resultsStream = {
+        quotesNumber: 0,
+        average: 0,
+        standardDeviation: 0,
+        modeValue: 0,
+        minValue: 0,
+        maxValue: 0,
+        lostQuotes: 0,
+        calculationStartTime: new Date(),
+        calculationTime: 0,
+    };
+
+    resultsForUser = {
+        quotesNumber: 0,
+        average: 0,
+        standardDeviation: 0,
+        modeValue: 0,
+        minValue: 0,
+        maxValue: 0,
+        lostQuotes: 0,
+        calculationStartTime: new Date(),
+        calculationTime: 0,
+    };
+
+
 
     constructor() {
-        makeAutoObservable(this);
+        makeAutoObservable(this, {
+            setSelectedNumber: action,
+            setStatusMessage: action,
+            updateResultProperty: action
+        });
     }
 
-    // Остальные свойства и методы...
 
-    // Метод для проверки числа и обработки разных ситуаций
-    handleUserInput(selectedNumber) {
-        switch (true) {
-            // Если число кратно 100, выполняем расчёты для всех котировок из текущего блока
-            case selectedNumber % 100 === 0:
-                this.processCurrentBlock();
-                console.log(`Число ${selectedNumber} кратно 100, обрабатываем текущий блок.`);
-                break;
+    setSelectedNumber(selectedNumber) {
+        this.selectedNumber = selectedNumber
+    }
 
-            // Если число больше 100, но не кратно, выполняем специфическую обработку
-            case selectedNumber > 100:
-                this.processOver100(selectedNumber);
-                console.log(`Число ${selectedNumber} больше 100, выполняем специальную обработку.`);
-                break;
 
-            // Если число меньше 100, обрабатываем оставшиеся котировки
-            case selectedNumber < 100:
-                this.processUnder100(selectedNumber);
-                console.log(`Число ${selectedNumber} меньше 100, обрабатываем оставшиеся котировки.`);
-                break;
+    setStatusMessage(text, color) {
+        this.statusMessage = [text, color];
+    }
 
-            // Дополнительные случаи
-            default:
-                console.log("Нет подходящего случая для обработки.");
+
+    async addQuote(quote) {
+
+         BatchCalculator:scanQuote(quote)
+
+        this.results.calculationStartTime = new Date()
+
+        if (quote && quote.id && quote.value) {
+
+            // накопившиеся после последнего вычисления котировки
+            // console.warn('sum',this.results.quotesNumber)
+            const accumulatedQuotesNumber = this.quotes.push(quote.value);
+            // общее количество котировок
+            const quotesNumber = accumulatedQuotesNumber + this.results.quotesNumber;
+            console.warn(quotesNumber)
+
+            // this.updateResultProperties(this.results, {
+            //     quotesNumber
+            // })
+
+            // console.table(toJS(this.results))
+
+            if (quotesNumber % this.selectedNumber === 0 ||
+                (this.selectedNumber > this.partSize && accumulatedQuotesNumber > this.partSize - 1)) {
+
+                // console.log(
+                //     `Общее число котировок ${totalQuotesNumber} кратно выбранному числу ${this.selectedNumber}
+                //      или число накопившихся  котировок ${totalQuotesNumber} больше  ${this.partSize}`
+                // )
+
+                await this.calculateResults(quotesNumber)
+
+                // console.log('Очищаю память, массив котировок до очистки:', this.quotes);
+                // вычищаем котировки, по которым уже произведены вычисления,
+                this.quotes = []  // чтобы не засорять память
+
+            } else {
+                console.log(`Вычисления не нужны, общее количество котировок  ${this.quotes.length + this.results.quotesNumber}`)
+            }
+
+        } else {
+            // невалидная (потеряная) котировка увеличивает счётчик потерянных котировок
+            this.setStatusMessage(`Потеряна котировка. Всего потеряно: ${this.results.lostQuotes++}`, "warning");
+            console.log('Потеряна котировка');
         }
     }
 
-    // Метод для обработки текущего блока (когда кратно 100)
-    processCurrentBlock() {
-        // Логика обработки блока данных
+
+    async calculateResults(quotesNumber) {
+
+
+        // console.log('Массив перед попытками преобразования:', this.quotes);
+        // const aQ= toJS(this.quotes)
+        // console.log('Массив после попытки преобразовать toJS(this.quotes):');
+        // console.log(aQ);
+        // const aQ2= toJS([...this.quotes])
+        // console.log('Массив после попытки преобразовать  toJS([...this.quotes]):');
+        // console.log(aQ2);
+        // вычисление среднего арифметического
+        // const average = await calculateAverage(
+        //     this.results.quotesNumber,
+        //     quotesNumber,
+        //     this.results.average,
+        //     toJS(this.quotes)
+        // )
+
+        // console.table({'average':average,'quotesNumber':quotesNumber})
+        console.table({ average, quotesNumber });
+
+        // console.log('average',average)
+        // console.log('quotesNumber',quotesNumber)
+        console.error(quotesNumber)
+        this.updateResultProperties(this.results, {
+            average,
+            quotesNumber
+        })
+        console.warn('sum',this.results.quotesNumber)
+
+        // вычисление среднего арифметического
+        // await calculateAverage()
+        // // вычисление среднего арифметического
+        // await calculateAverage()
+        // // вычисление среднего арифметического
+        // await calculateAverage()
+        // // вычисление среднего арифметического
+        // await calculateAverage()
+
     }
 
-    // Метод для обработки случаев, когда число больше 100
-    processOver100(selectedNumber) {
-        // Специфическая логика для чисел больше 100
-    }
-
-    // Метод для обработки случаев, когда число меньше 100
-    processUnder100(selectedNumber) {
-        // Специфическая логика для чисел меньше 100
-    }
-
-
-
-
-
-
-    // Метод для очистки всех данных
-    clearData() {
-        this.quotes = [];
-        this.totalQuotes = 0;
-        this.lostQuotes = 0;
-        this.meanValue = 0;
-    }
 
 }
+
 
 const quotesStore = new QuotesStore();
 export default quotesStore;

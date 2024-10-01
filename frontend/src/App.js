@@ -1,35 +1,36 @@
 import React, {useState, useEffect} from 'react';
 import {ThemeProvider, createTheme} from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import tests from "./stores/tests";
+import darkScrollbar from '@mui/material/darkScrollbar';
 import Root from "./components/Root";
-import appStore from "./stores/app";
+import "./styles/global.css";
+import FabButton from "./components/FabButton";
 
 
 const ReactJSSPApp = () => {
 
-    const [mode, setMode] = useState('dark');
-
-    useEffect(() => {
-        console.warn('ReactJSSPApp')
-    }, []);
-
-
     const theme = createTheme({
         palette: {
-            mode: mode || 'dark',
+            mode: 'dark'
         },
+        components: {
+            MuiCssBaseline: {
+                styleOverrides: (themeParam) => ({
+                    body: themeParam.palette.mode === 'dark' ? darkScrollbar() : null,
+                }),
+            },
+        },
+
     });
 
-    appStore.setToggleModeFunction(() => {
-        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
-    })
-
     return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline/>
-            <Root/>
-        </ThemeProvider>
+        <div>
+            <ThemeProvider theme={theme}>
+                <CssBaseline/>
+                {/*<FabButton/>*/}
+                <Root/>
+            </ThemeProvider>
+        </div>
     )
 }
 

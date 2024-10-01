@@ -3,15 +3,27 @@ import React from "react";
 import QuotesInput from "./QuotesInput";
 import webSocket from "../stores/webSocket";
 import quotesStore from "../stores/quotes";
-import {StartButton, StatButton, ControlPanelContainer, HStack} from '../styles';
-import AnimatedNumber from "./AnimatedNumber";
+import {StartButton, StatButton, Panel, HStack} from '../styles';
+import app from "../App";
+import {observer} from "mobx-react-lite";
+import Divider from '@mui/material/Divider';
 
 
-const ControlPanel = () =>
-    (<ControlPanelContainer>
+const ControlPanel = observer(() => {
+    return (<Panel>
         <CardContent>
             <QuotesInput/>
-            <HStack justifyContent="space-between">
+            <Divider/>
+            <HStack justifyContent="space-between" marginTop={2}>
+                <StatButton
+                    variant="outlined"
+                    onClick={() =>
+                        app.changeColorTheme()
+                        // quotesStore.handleCalculate()
+                    }
+                >
+                    Статистика
+                </StatButton>
                 <StartButton
                     onClick={() => webSocket.socket ? webSocket.disconnect() : webSocket.connect()}
                     variant="contained"
@@ -19,14 +31,9 @@ const ControlPanel = () =>
                 >
                     {webSocket.socket ? 'Стоп' : 'Старт'}
                 </StartButton>
-                <StatButton
-                    variant="outlined"
-                    onClick={() => quotesStore.handleCalculate()}
-                >
-                    Статистика
-                </StatButton>
             </HStack>
         </CardContent>
-    </ControlPanelContainer>);
+    </Panel>)
+})
 
 export default ControlPanel;

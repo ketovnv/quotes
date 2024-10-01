@@ -1,19 +1,19 @@
 import {CardContent, Typography} from "@mui/material";
 import React from "react";
 import quotesStore from "../stores/quotes";
-import {ControlPanelContainer} from '../styles';
-import AnimatedNumber from "./AnimatedNumber";
+import {Panel} from '../styles';
+
 
 
 const ControlPanel = () =>
-    (<ControlPanelContainer>
+    (<Panel>
         <CardContent>
-            <Typography sx={{marginTop: 2}} color={quotesStore.statusMessage.color} w='100%'
+            <Typography sx={{marginTop: 2}} color={quotesStore.statusMessage[1]} w='100%'
                         textAlign="center"
-                        fontSize={quotesStore.statusMessage.text.length > 32 ? 14 : 18}
-                        dangerouslySetInnerHTML={{__html: quotesStore.statusMessage.text}}
+                        fontSize={quotesStore.statusMessage[0].length > 32 ? 14 : 18}
+                        dangerouslySetInnerHTML={{__html: quotesStore.statusMessage[0]}}
             />
         </CardContent>
-    </ControlPanelContainer>);
+    </Panel>);
 
 export default ControlPanel;

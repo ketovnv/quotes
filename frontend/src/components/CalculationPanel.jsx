@@ -1,22 +1,24 @@
-import {Box, CardContent, Typography} from "@mui/material";
+import {Box, CardContent, FormControlLabel, Switch, Typography} from "@mui/material";
 import React from "react";
 import quotesStore from "../stores/quotes";
-import {ControlPanelContainer, HStack} from '../styles';
+import {HStack, Panel} from '../styles';
 import AnimatedNumber from "./AnimatedNumber";
+import {observer} from "mobx-react-lite";
 
 
-const ControlPanel = () =>
-    (<ControlPanelContainer>
+const CalculationPanel = observer(() => {
+    return (
+        <Panel>
             <CardContent>
                 <HStack>
-                    <Typography fontSize={14} sx={{position:"relative",top:3}}>Время выполнения:&nbsp;</Typography>
+                    <Typography fontSize={14} sx={{position: "relative", top: 3}}>Время выполнения:&nbsp;</Typography>
                     <AnimatedNumber
-                        endValue={quotesStore.calculateStartTime ? (Date.now()-quotesStore.calculateStartTime)/1000 : 0}
-                        startFromPrevious={true} />
-                    <Typography fontSize={14} sx={{position:"relative",top:3}}>&nbsp;сек</Typography>
+                        endValue={quotesStore.calculateStartTime ? (Date.now() - quotesStore.calculateStartTime) / 1000 : 0}
+                        startFromPrevious={true}/>
+                    <Typography fontSize={14} sx={{position: "relative", top: 3}}>&nbsp;сек</Typography>
                 </HStack>
-                {quotesStore.statistics &&
-                    Array.isArray(quotesStore.statistics) && quotesStore.statistics.map((stat, index) => (
+                {quotesStore.results &&
+                    Array.isArray(quotesStore.results) && quotesStore.к.map((stat, index) => (
                         <Box display="flex" flexDirection="column">
                             <Typography>
                                 {stat.type}:
@@ -26,6 +28,7 @@ const ControlPanel = () =>
                     ))
                 }
             </CardContent>
-        </ControlPanelContainer>);
+        </Panel>)
 
-export default ControlPanel;
+})
+export default CalculationPanel;
