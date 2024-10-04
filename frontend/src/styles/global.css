@@ -1,27 +1,102 @@
-
-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: -1;
-}
-
-body{
-    background-color:#000;
-    overflow:hidden;
-    margin:0;
-    font-family: 'Fira Code Variable', monospace;
-    font-size: 16px;
-}
-
-canvas {
-    position: absolute;
+body {
     overflow: hidden;
-    display: block;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
+    margin: 0;
+    font-family: 'Fraunces Variable', monospace;
+    font-size: 18px;
+    background: linear-gradient(-45deg, #5566FF, #0073c7, #23a6d5, #23d5FF);
+    background-size: 400% 400%;
+    animation: gradient 10s ease infinite;
+}
+
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* CSS код для стилей панели */
+.panel {
+    height: 200px;
+    border-radius: 10px;
+    padding: 0px;
+    margin: 20px;
+    box-shadow: 0 3px 6px rgba(255,255,255,0.1);
+    background-color: #424242;
+    transition: all 0.3s ease
+}
+
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.board{
+    display: flex;
+    -ms-flex-wrap: wrap;
+    position: relative;
+    background: linear-gradient(145deg, #2e2e2e, #1c1c1c);
+    border-radius: 10px;
+    box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.3),
+            inset 0 -1px 5px rgba(0, 0, 0, 0.6),
+            0 3px 6px rgba(0, 0, 0, 0.2);
+    border: 1px solid #444;
+    color: #fff;
+    padding: 20px;
+    animation: bd-gradient 10s ease infinite;
+}
+
+@keyframes bd-gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+
+.board::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background: rgba(255, 255, 255, 1);
+    border-radius: 10px 10px 0 0;
+}
+
+
+/* Стандартный стиль */
+.default-style {
+    background-color: #333;
+    color: #fff;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Металлический стиль */
+.c {
+    background: linear-gradient(145deg, #3d3d3d, #2c2c2c, #1e1e1e, #3d3d3d);
+    color: #fff;
+    border: 1px solid #444;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 -1px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Градиентный стиль */
+.gradient-style {
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    color: #fff;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Текстурированный стиль */
+.textured-style {
+    background: url('https://www.transparenttextures.com/patterns/brushed-alum.png'), linear-gradient(145deg, #3d3d3d, #1e1e1e);
+    color: #fff;
+    border: 1px solid #444;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 5px rgba(0, 0, 0, 0.6);
+}
+
+@keyframes spin {
+    /*0% { transform: rotate(0deg); }*/
+    100% { transform: rotate(360deg); }
 }
 
 

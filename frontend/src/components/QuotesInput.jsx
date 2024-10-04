@@ -9,7 +9,7 @@ import {HStack} from '../styles';
 const QuotesInput = observer(() => {
 
     return (
-        <HStack mb={2}>
+        <HStack mb={2}      >
             <Button onClick={() => quotesStore.setSelectedNumber(quotesStore.selectedNumber > 1 ? quotesStore.selectedNumber - 1 : 0)}
                     sx={{marginRight: 1}}>
                 <RemoveIcon/>
@@ -17,10 +17,10 @@ const QuotesInput = observer(() => {
             <TextField
                 slotProps={{
                     inputLabel: {
-                        style: { fontSize: 18 }
+                        style: { fontSize: 16 }
                     },
                     htmlInput:{
-                        style: { fontSize: 42, textAlign: 'center', minWidth: 200 }
+                        style: { fontSize: 42, textAlign: 'center',}
                     }
 
                 }}

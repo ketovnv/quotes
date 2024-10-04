@@ -80,27 +80,8 @@ export const calculateMode = async (lastResultQuotesNumber, currentQuotesNumber,
 // addQuote(quote) {
 //     this.quotes.push(quote);
 //
-//     // Обновляем частоту котировки для моды
-//     if (this.frequencyMap[quote]) {
-//         this.frequencyMap[quote]++;
-//     } else {
-//         this.frequencyMap[quote] = 1;
-//     }
-//
-//     // Обновляем моду, если новая котировка встречается чаще
-//     if (!this.results.modeValue || this.frequencyMap[quote] > this.frequencyMap[this.results.modeValue]) {
-//         this.results.modeValue = quote;
-//     }
-//
-//     // Обновляем минимум
-//     if (quote < this.results.minValue) {
-//         this.results.minValue = quote;
-//     }
-//
-//     // Обновляем максимум
-//     if (quote > this.results.maxValue) {
-//         this.results.maxValue = quote;
-//     }
+    // Обновляем частоту котировки для моды
+
 //
 //     // Теперь модуль расчётов вызывается по необходимости
 //     if (this.quotes.length % this.selectedNumber === 0) {

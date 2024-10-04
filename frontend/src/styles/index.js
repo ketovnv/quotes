@@ -1,6 +1,7 @@
 import styled from 'styled-components';
+import"@fontsource-variable/fraunces"
 import {Box, Button, Card} from "@mui/material";
-import '@fontsource-variable/fira-code';
+
 
 export const AppContainer = styled(Box)(() => ({
     height: '100vh',
@@ -9,11 +10,18 @@ export const AppContainer = styled(Box)(() => ({
     flexDirection: 'column',
     alignItems: 'center',
     paddingTop: '100px',
-    backgroundColor: '#111',
+    // backgroundColor: '#111',
     backgroundImage: 'radial-gradient(circle at 50% 50%, hsla(210, 100%, 75%, 0.5), hsl(220, 30%, 5%))',
-    backgroundRepeat: 'no-repeat',
+    // backgroundRepeat: 'no-repeat',
 }));
 
+export const StyledAppBar = styled(Box)(() => ({
+    alignItems: 'end',
+    position: 'fixed',
+    boxShadow: 'none',
+    paddingRight: '12px',
+
+}));
 
 export const StyledButton = styled(Button)(() => ({
     backgroundColor: '#333333',
@@ -43,19 +51,12 @@ export const StatButton = styled(Button)(() => ({
     },
 }));
 
-export const Panel = styled(Card)(() => ({
-    width: '385px',
-    minHeight: '115px',
-    marginTop: 3,
-    boxShadow: '0 3px 6px rgba(255,255,255,0.1)',
-    backgroundColor: '#424242',
-    transition: 'all 0.3s ease',
-}));
 
 export const HStack = styled(Box)(({...props}) => ({
+    justifyContent: props.justifyContent || 'center',
+    width: props.width || '100%',
     display: 'flex',
     flexDirection: 'row',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1), 0 8px 12px rgba(0, 0, 0, 0.1)',
     borderRadius: 8,
     padding: 16,
 }))

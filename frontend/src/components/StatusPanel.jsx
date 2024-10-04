@@ -1,19 +1,18 @@
-import {CardContent, Typography} from "@mui/material";
+import {Card, CardContent, Typography} from "@mui/material";
 import React from "react";
 import quotesStore from "../stores/quotes";
 import {Panel} from '../styles';
-
-
+import appStore from "../stores/app";
 
 const ControlPanel = () =>
-    (<Panel>
+    (<Card className='panel'>
         <CardContent>
-            <Typography sx={{marginTop: 2}} color={quotesStore.statusMessage[1]} w='100%'
+            <Typography sx={{marginTop: 2}} color={appStore.statusMessage[1]} w='100%'
                         textAlign="center"
-                        fontSize={quotesStore.statusMessage[0].length > 32 ? 14 : 18}
-                        dangerouslySetInnerHTML={{__html: quotesStore.statusMessage[0]}}
+                        fontSize={appStore.statusMessage[0].length > 32 ? 14 : 18}
+                        dangerouslySetInnerHTML={{__html: appStore.statusMessage[0]}}
             />
         </CardContent>
-    </Panel>);
+    </Card>);
 
 export default ControlPanel;

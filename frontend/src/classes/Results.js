@@ -1,14 +1,27 @@
 import {makeAutoObservable, action} from "mobx";
-// класс для хранения результатов
-export class Results {
-    quotesNumber = 0;
-    average = 0;
-    modeValue = 0;
 
-    constructor(initialValues = {}) {
+// класс для хранения результатов вычислений
+export class Results {
+
+    quotesNumber = 0// количество котировок,
+    // при котором производились
+    // вычисления
+    average = 0 // cреднее значение
+    standardDeviation = 0 // стандартное отклонение
+    modeValue = 0 // мода
+    minValue = 0 // минимальное значение
+    maxValue = 0 // максимальное значение
+    // количество потерянных котировок
+    calculationStartTime = new Date() // время начала расчёта
+    calculationTime = 0 // время расчёта в миллисекундах
+    quotes = [] // котировки накопленные с моменета
+                //последних вычислений
+
+
+    constructor(initialValues) {
         this.updateFields(initialValues)
-        makeAutoObservable(this),{
-            supdateField: action
+        makeAutoObservable(this), {
+            updateField: action
         }; // MobX объект
     }
 
@@ -19,6 +32,7 @@ export class Results {
                  Будет добавлено новое свойство`
             );
         this[field] = value;
+        return this
     }
 
     updateFields(fields) {
@@ -27,9 +41,7 @@ export class Results {
                 this.updateField(field, fields[field]);
             });
         }
+        return this
     }
 
-    fullSync(results) {
-        Object.assign(this, results);
-    }
 }

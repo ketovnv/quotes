@@ -1,38 +1,37 @@
 import {Results} from "./Results";
-
+import quotesStore from "../stores/quotes";
 export class BaseCalculator {
-
-    static batchResults = new Results()
-    static chunkResults = new Results()
-    static streamResults = new Results()
-
-    static createVisibleResults() {
-        return new Results();
-    }
-
-    scanQuote(quote) {
-
-    }
+    //результаты последних вычислений
 
 
-    async calculate(quote, results = this.results) {
+    static scanQuote(selectedNumber, quote) {
+        if (quote && quote.id && quote.value) {
 
-        throw new Error("Method 'calculate()' must be implemented.");
-    }
 
-    syncResults(toResult, fromResult, fields = null, field = null) {
-        // если поля передано, синхронизируeтся только оно
-        if (field)
-            toResult.updateField(field, fromResult[field])
-        if (fields) {
-            // если поля переданы, синхронизируются только они
-            fields.forEach(field => {
-                toResult.updateField(field, fromResult[field])
-            });
-        } else {
-            // поля не переданы - сливается всё данные
-            toResult.updateFields(fromResult);
+            if (quotesNumber % quotesStore.selectedNumber === 0) {
+                BatchCalculator
+                    .calculate((quotesStore.batchVisibleResults ?? BatchCalculator.createVisibleResults({...self.initResult})));
+                ChunkCalculator
+                    .calculate((quotesStore.chunkVisibleResults ?? ChunkCalculator.createVisibleResults({...self.initResult})))
+            }
+
+            if (accumulatedQuotesNumber > BatchCalculator.partSize)
+                BatchCalculator
+                    .calculate((quotesStore.batchVisibleResults ?? BatchCalculator.createVisibleResults({...self.initResult})));
+
+            if (accumulatedQuotesNumber > ChunkCalculator.partSize)
+                ChunkCalculator
+                    .calculate((quotesStore.chunkVisibleResults ?? ChunkCalculator.createVisibleResults({...self.initResult})))
+
+
+            StreamCalculator
+                .calculate((quotesStore.streamVisibleResults ?? StreamCalculator.createVisibleResults({...self.initResult})));
+            // вычищаем котировки, по которым уже произведены вычисления,
+            this.quotes = []     // чтобы не засорять память
         }
+
+        this.lostQuotes++
+        console.log('Потеряна котировка');
     }
 
 }

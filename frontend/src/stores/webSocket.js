@@ -1,9 +1,10 @@
 import {makeAutoObservable} from 'mobx';
+import appStore from "./app";
 import quotesStore from "./quotes";
 
 
 class WebSocketStore {
-    url='ws://localhost:8082'
+    url = 'ws://localhost:8082'
     // url='wss://trade.termplat.com:8800/?password=1234'
     socket = null;
     isConnected = false;
@@ -23,17 +24,16 @@ class WebSocketStore {
         this.socket = new WebSocket(this.url);
         this.socket.onopen = () => {
             this.isConnected = true;
-            quotesStore.setStatusMessage(["Подключение установлено", "primary"]);
+            appStore.setStatusMessage(["Подключение установлено", "primary"]);
             this.sendMessage({type: 'register', clientId: this.clientId});
         };
 
-        this.socket.onmessage = (event) => {
+        this.socket.onmessage = async (event) => {
             try {
                 const quote = JSON.parse(event.data);
-                // console.log("Получена котировка:", quote);
-                quotesStore.addQuote(quote);
+                quotesStore.newQuote(quote)
             } catch (error) {
-                quotesStore.setStatusMessage(["Соединение потеряно. Попытка переподключения ...", "warning"]);
+                appStore.setStatusMessage(["Соединение потеряно. Попытка переподключения ...", "warning"]);
                 setTimeout(() => {
                     this.connect(this.url);
                 }, 5000);
@@ -42,11 +42,16 @@ class WebSocketStore {
         };
 
         this.socket.onclose = () => {
-            quotesStore.setStatusMessage(["Готов к работе", "white"]);
+            appStore.setStatusMessage(["Готов к работе", "white"]);
             console.log('WebSocket connection closed');
         };
     }
 
+    scanQuote(message) {
+        if (this.socket && this.isConnected) {
+            this.socket.send(JSON.stringify(message));
+        }
+    }
 
 
     sendMessage(message) {
