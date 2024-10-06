@@ -12,4 +12,4 @@
 
     # всё остальное на index.html
     RewriteRule ^ index.html [L]
-</IfModule>
+</IfModule>у
