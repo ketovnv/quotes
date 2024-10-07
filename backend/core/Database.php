@@ -31,6 +31,9 @@ class Database {
     }
 
     public function getConnection() {
+        if ($this->connection === null) {
+            throw new Exception('No active database connection');
+        }
         return $this->connection;
     }
 }

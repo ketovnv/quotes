@@ -1,15 +1,15 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # если файл или директория существуют
+    # Если файл или директория существуют, то отдаем их напрямую
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
 
-    # API
+    # Перенаправляем все запросы к API на backend/index.php
     RewriteCond %{REQUEST_URI} ^/api
     RewriteRule ^api/(.*)$ backend/index.php?url=$1 [QSA,L]
 
-    # всё остальное на index.html
+    # Все остальные запросы перенаправляем на index.html
     RewriteRule ^ index.html [L]
-</IfModule>у
+</IfModule>

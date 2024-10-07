@@ -1,66 +1,50 @@
 <?php
-
 namespace Core;
 
-function router($url)
-{
+function router($url) {
     try {
+        // Разбиваем URL на части
+        $parts = explode('/', trim($url, '/'));
 
+        // Имя контроллера — первая часть URL
+        $controllerName = !empty($parts[0])
+            ? 'backend\\controllers\\' . ucfirst(array_shift($parts)) . 'Controller'
+            : 'backend\\controllers\\DefaultController';
 
-    // Разбиваем URL на части
-    $parts = explode('/', trim($url, '/'));
+        // Имя метода — вторая часть URL (действие)
+        $methodName = !empty($parts) ? array_shift($parts) : 'index';
 
-    // Имя контроллера — первая часть URL
-    $controllerName = !empty($parts[0])
-        ? 'backend\\controllers\\' . ucfirst(array_shift($parts)) . 'Controller'
-        : 'backend\\controllers\\DefaultController';
+        // Оставшиеся части — параметры метода
+        $params = !empty($parts) ? $parts : [];
 
-    // Имя метода — вторая часть URL (действие)
-    $methodName = !empty($parts) ? array_shift($parts) : 'index';
+        // Проверка наличия контроллера
+        if (class_exists($controllerName)) {
+            $controller = new $controllerName();
 
-    // Оставшиеся части — параметры метода
-    $params = !empty($parts) ? $parts : [];
-        {
+            // Проверка наличия метода в контроллере
+            if (method_exists($controller, $methodName)) {
+                $reflection = new \ReflectionMethod($controller, $methodName);
+                $expectedParams = $reflection->getNumberOfRequiredParameters();
 
-
-            // Проверка наличия контроллера
-            if (class_exists($controllerName)) {
-                $controller = new $controllerName();
-                if (method_exists($controller, $methodName)) {
-                    $reflection = new \ReflectionMethod($controller, $methodName);
-                    $expectedParams = $reflection->getNumberOfRequiredParameters();
-
-                    if (count($params) >= $expectedParams) {
-                        call_user_func_array([$controller, $methodName], $params);
-                    } else {
-                        http_response_code(400); // Ошибка: недостаточно параметров
-                        echo json_encode(['error' => 'Insufficient parameters']);
-                    }
-                } else {
-                    http_response_code(404);
-                    echo json_encode(['error' => 'Method not found']);
-                }
-                // Проверка наличия метода в контроллере
-                if (method_exists($controller, $methodName)) {
+                if (count($params) >= $expectedParams) {
                     // Вызов метода с параметрами
                     call_user_func_array([$controller, $methodName], $params);
                 } else {
-                    // Ошибка: метод не найден
-                    http_response_code(404);
-                    echo json_encode(['error' => 'Method not found']);
+                    http_response_code(400); // Ошибка: недостаточно параметров
+                    echo json_encode(['error' => 'Insufficient parameters']);
                 }
-
             } else {
-                // Ошибка: контроллер не найден
+                // Ошибка: метод не найден
                 http_response_code(404);
-                echo json_encode(['error' => 'Controller not found']);
+                echo json_encode(['error' => 'Method not found']);
             }
-
+        } else {
+            // Ошибка: контроллер не найден
+            http_response_code(404);
+            echo json_encode(['error' => 'Controller not found']);
         }
     } catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode(['error' => $e->getMessage()]);
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
 }
-
-}
-
